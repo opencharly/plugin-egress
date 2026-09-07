@@ -50,6 +50,7 @@ var kindDefPaths = map[string]string{
 	"cloud_init_meta":    "#CloudInitMeta",
 	"cloud_init_net":     "#NetworkConfigV2",
 	"libvirt_domain_xml": "#LibvirtDomainXML",
+	"crabbox-yaml":       "#CrabboxYaml",
 }
 
 // NewProvider builds the egress provider, compiling its schemas once at construction.
