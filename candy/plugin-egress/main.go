@@ -45,6 +45,7 @@ var kindDefPaths = map[string]string{
 	"traefik_routes":     "#TraefikRoutes",
 	"k8s_object":         "#K8sObject",
 	"kustomization":      "#Kustomization",
+	"kind_cluster":       "#KindCluster",
 	"deploy_record":      "#DeployRecord",
 	"candy_record":       "#CandyRecord",
 	"cloud_init_meta":    "#CloudInitMeta",

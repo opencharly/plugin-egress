@@ -23,6 +23,9 @@ func TestEgressValidate(t *testing.T) {
 		{"cloud_config-good", validateInput{Kind: "cloud_config", Label: "ud", Mode: "bytes", Data: "#cloud-config\nusers: []\n"}, false},
 		{"deploy_record-good", validateInput{Kind: "deploy_record", Label: "rec", Mode: "bytes", Data: `{"deploy_id":"d1","target":"t1","deployed_at":"2026-06-30T00:00:00Z"}`}, false},
 		{"deploy_record-missing-required", validateInput{Kind: "deploy_record", Label: "rec", Mode: "bytes", Data: `{}`}, true},
+		{"kind_cluster-good", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[{"role":"control-plane"},{"role":"worker"}]}`}, false},
+		{"kind_cluster-bad-role", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[{"role":"boss"}]}`}, true},
+		{"kind_cluster-empty-nodes", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[]}`}, true},
 		{"unknown-kind", validateInput{Kind: "nope", Label: "x", Mode: "bytes", Data: "{}"}, true},
 	}
 	for _, c := range cases {
@@ -47,6 +50,27 @@ func TestEgressValidate(t *testing.T) {
 // own vendored schema rejects). Relocated here with the egress family (K-wave 2 cone R2): the
 // shim that used to front this gate moved to candy/plugin-fleet, whose test binary cannot reach
 // verb:egress — the schema is the load-bearing half, and it lives here.
+// TestGoldenKindCluster_OutputValidatesAgainstSchema proves the REAL kind Cluster
+// config generator (candy/plugin-kube's renderKindClusterConfig) produces bytes that
+// satisfy the REAL egress gate — driven from a golden fixture (matching the
+// golden-cloudinit precedent) captured by actually running renderKindClusterConfig
+// with a two-node + port-mapping topology. A schema that falsely REJECTED charly's
+// own generated config would fail here; the hand-written JSON cases in
+// TestEgressValidate cannot catch that.
+func TestGoldenKindCluster_OutputValidatesAgainstSchema(t *testing.T) {
+	p, err := newProvider()
+	if err != nil {
+		t.Fatalf("newProvider: %v", err)
+	}
+	data, err := os.ReadFile("testdata/kind_cluster_golden.yaml")
+	if err != nil {
+		t.Fatalf("reading golden kind-cluster fixture: %v", err)
+	}
+	if got := p.validate(validateInput{Kind: "kind_cluster", Label: "golden kind cluster config", Mode: "bytes", Data: string(data)}); got != "" {
+		t.Fatalf("golden kind Cluster config must pass the real egress gate, got: %v", got)
+	}
+}
+
 func TestGoldenCloudInit_OutputValidatesAgainstSchema(t *testing.T) {
 	p, err := newProvider()
 	if err != nil {
