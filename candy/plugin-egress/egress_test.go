@@ -23,6 +23,9 @@ func TestEgressValidate(t *testing.T) {
 		{"cloud_config-good", validateInput{Kind: "cloud_config", Label: "ud", Mode: "bytes", Data: "#cloud-config\nusers: []\n"}, false},
 		{"deploy_record-good", validateInput{Kind: "deploy_record", Label: "rec", Mode: "bytes", Data: `{"deploy_id":"d1","target":"t1","deployed_at":"2026-06-30T00:00:00Z"}`}, false},
 		{"deploy_record-missing-required", validateInput{Kind: "deploy_record", Label: "rec", Mode: "bytes", Data: `{}`}, true},
+		{"kind_cluster-good", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[{"role":"control-plane"},{"role":"worker"}]}`}, false},
+		{"kind_cluster-bad-role", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[{"role":"boss"}]}`}, true},
+		{"kind_cluster-empty-nodes", validateInput{Kind: "kind_cluster", Label: "kind", Mode: "bytes", Data: `{"kind":"Cluster","apiVersion":"kind.x-k8s.io/v1alpha4","nodes":[]}`}, true},
 		{"unknown-kind", validateInput{Kind: "nope", Label: "x", Mode: "bytes", Data: "{}"}, true},
 	}
 	for _, c := range cases {
