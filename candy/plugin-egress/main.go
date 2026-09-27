@@ -9,11 +9,11 @@
 // envelope over a CUE-unify that dominates — gRPC per-call would be needless, and the
 // perf-scoped build loader would not connect an out-of-process egress before generate).
 //
-// The schemas are held INTERNALLY (embedded + compiled in this plugin's own cue context,
-// the package-less defs concatenated, the vendored cloud_config compiled as its own
-// instance) and are NOT served over Describe — Describe ships only a trivial schema to
-// satisfy the host's plugin-schema gate, so the vendored package+import file never has to
-// join the single-blob Describe concat.
+// The VALIDATION schemas are held INTERNALLY (embedded + compiled in this plugin's own cue
+// context, the package-less defs concatenated, the vendored cloud_config compiled as its own
+// instance) and are NOT served over Describe — Describe serves this plugin's own self-contained
+// DECLARATION schema (schema/egress.cue), so the vendored package+import file never has to join
+// the single-blob Describe concat.
 package egress
 
 import (
@@ -35,6 +35,12 @@ import (
 
 //go:embed egress-schemas/*.cue egress-schemas/vendor/*.cue
 var egressSchemaFS embed.FS
+
+// The self-contained DECLARATION schema served over Describe (schema/egress.cue) —
+// distinct from the INTERNAL validation schemas above, which are never served.
+//
+//go:embed schema/*.cue
+var schemaFS embed.FS
 
 const calver = "2026.181.0001"
 
@@ -63,14 +69,15 @@ func NewProvider() pb.ProviderServer {
 	return p
 }
 
-// NewMeta advertises verb:egress serving OpValidate, via sdk.NewMeta → BuildCapabilities.
-// The egress SCHEMAS are internal (compiled in newProvider) — Describe ships only the
-// trivial #EgressInput so the host's plugin-schema gate has a non-empty, base-spliceable
-// schema.
+// NewMeta advertises verb:egress serving OpValidate, via sdk.NewMeta → BuildCapabilities,
+// together with this plugin's OWN self-contained CUE schema (schema/egress.cue) served over
+// Describe — there is NO schema-less plugin. The egress VALIDATION schemas stay internal
+// (compiled in newProvider); the served declaration schema is the uniform surface every
+// plugin presents.
 func NewMeta() pb.PluginMetaServer {
 	return sdk.NewMeta(calver,
 		[]sdk.ProvidedCapability{{Class: "verb", Word: "egress"}},
-		nil)
+		schemaFS)
 }
 
 type provider struct {
