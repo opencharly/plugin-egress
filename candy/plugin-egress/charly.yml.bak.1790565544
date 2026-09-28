@@ -1,5 +1,7 @@
+version: 2026.232.0520
 plugin-egress:
     candy:
+        version: 2026.181.0001
         description: |-
             EGRESS VALIDATION plugin (M16) — gates the config artifacts charly WRITES to a
             system (cloud-init user-data/meta/net, kubernetes manifests + kustomization, traefik
