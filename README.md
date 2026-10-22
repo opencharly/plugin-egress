@@ -33,6 +33,8 @@ best-effort).
 | `libvirt_domain_xml` | the libvirt domain XML |
 | `crabbox-yaml` | the crabbox YAML |
 | `cloud_config` | the vendored cloud-config schema |
+| `netfilter_rules` | the Firecracker host's FORWARD/NAT ruleset |
+| `containerd_config` | the containerd config (version 2 and version 4) |
 
 The egress schemas are held **internally** (embedded and compiled in the
 plugin's own CUE context); `Describe` ships only a trivial schema to satisfy the

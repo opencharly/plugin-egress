@@ -31,8 +31,8 @@ Canonical files:
 
 - `go build ./...` in `candy/plugin-egress/` — compile the plugin module.
 - `go test ./...` in `candy/plugin-egress/` — the plugin's Go tests
-  (`egress_test.go`, `crabbox_egress_test.go`, `schema_serve_test.go`,
-  `schema_splice_test.go`).
+  (`egress_test.go`, `crabbox_egress_test.go`, `firecracker_egress_test.go`,
+  `schema_serve_test.go`, `schema_splice_test.go`).
 - `charly box validate` at the repo root — the structural check (the candy +
   `plugin:` block, CUE schema).
 - The merge gate is the **org-wide** `charly/pr-validator` (required check
