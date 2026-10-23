@@ -19,3 +19,27 @@ plugin-egress:
               context:
                 - build
               command: "true"
+
+# The `egress` skill — ROUTING ONLY. The prose is the FILE
+# `.agents/skills/egress/SKILL.md` at this repo's root, copied byte-identically
+# (sha256 2bc122225e6aad260acf0e6cebbad294cd35dc232cd87241e26212530b3885c8)
+# from `opencharly/layer-charly-internals` at its `main`; the node carries no
+# `description:`/`content:`, because an in-line body that disagrees with its file
+# is a hard error in the marketplace generator.
+#
+# The body resolves against the OWNING CANDY's repo root (sdk/deploykit's
+# `candyRepoRoot`), which is why it sits at `.agents/skills/` here and not inside
+# `candy/plugin-egress/`. The destination is measured, never chosen: `ValidateEgress`
+# and the vendored egress CUE schemas live in this candy
+# (opencharly/opencharly#611, "#611 said plugin-fleet" corrected there — the shim in
+# plugin-fleet only Invokes `verb:egress`).
+#
+# `family: internals` is carried over UNCHANGED so every
+# `/charly-internals:egress` address survives the move.
+egress-skill:
+    skill:
+        name: egress
+        family: internals
+        owner: plugin-egress
+        triggers:
+            - "Egress config validation — validating/generating the config files charly WRITES to a system (`candy/plugin-fleet/egress.go`, `ValidateEgress`, the vendored CUE egress schemas in `candy/plugin-egress/egress-schemas/vendor/`, cloud-init/k8s_object/units/ssh_config/libvirt-XML egress)"

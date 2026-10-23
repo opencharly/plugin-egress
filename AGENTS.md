@@ -9,7 +9,12 @@ scanned.
 Canonical files:
 
 - `candy/plugin-egress/charly.yml` — the `plugin-egress:` candy entity
-  (`plugin:` block, `plan:` check).
+  (`plugin:` block, `plan:` check) and the routing-only `egress-skill:` `skill:`
+  node it owns.
+- `.agents/skills/egress/SKILL.md` — the `egress` skill's PROSE (the node above
+  carries no body). It sits at the repo root because a skill body resolves
+  against the owning candy's REPO ROOT, and its destination here is measured:
+  `ValidateEgress` + the vendored egress CUE schemas live in this repo.
 - `candy/plugin-egress/main.go` — the provider (`NewProvider()` + `NewMeta()`)
   and the compiled `kindDefPaths` schema map.
 - `candy/plugin-egress/schema/egress.cue` — the served declaration surface.
