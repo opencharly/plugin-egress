@@ -18,6 +18,10 @@ func TestEgressCrabboxYaml(t *testing.T) {
 	}{
 		{"good-minimal", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: local-container\n"}, false},
 		{"good-noHostname-bool", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: local-container\nlocalContainer:\n  noHostname: true\n  network: bridge\n"}, false},
+		{"good-containerd", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: containerd\ncontainerd:\n  image: ghcr.io/opencharly/pod-crabbox:2026.293.1655\n  runtime: crun\n  namespace: default\n  cpus: 2\n"}, false},
+		{"containerd-cpus-string-rejected", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: containerd\ncontainerd:\n  cpus: \"two\"\n"}, true},
+		{"containerd-rootless-string-rejected", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: containerd\ncontainerd:\n  rootless: \"yes\"\n"}, true},
+		{"containerd-runtime-enum-rejected", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: containerd\ncontainerd:\n  runtime: podman\n"}, true},
 		{"noHostname-string-rejected", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "provider: local-container\nlocalContainer:\n  noHostname: \"yes\"\n"}, true},
 		{"missing-provider", validateInput{Kind: "crabbox-yaml", Label: "crabbox.yaml", Mode: "bytes", Data: "localContainer:\n  noHostname: false\n"}, true},
 	}
